@@ -14,7 +14,10 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native'; 
+import { useFocusEffect } from '@react-navigation/native';
+import { doc, setDoc } from "firebase/firestore";
+import {db} from './dbConfig'; 
+ 
 
 export default function AdminScreen({ navigation }) {
   const [produtos, setProdutos] = useState([]);
@@ -24,6 +27,11 @@ export default function AdminScreen({ navigation }) {
   const [imagens, setImagens] = useState([]);
   const [editando, setEditando] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  function criar (produto){
+  
+      setDoc(doc(db, "Produtos"),produto);
+    }
 
   useFocusEffect(
     React.useCallback(() => {
@@ -89,13 +97,14 @@ export default function AdminScreen({ navigation }) {
       );
     } else {
       const novoProduto = {
-        id: Date.now().toString(),
+        
         nome,
         marca,
         preco,
         imagens,
       };
       setProdutos([...produtos, novoProduto]);
+      criar(novoProduto);
     }
 
     limparCampos();
@@ -219,6 +228,8 @@ export default function AdminScreen({ navigation }) {
             )}
 
             <TouchableOpacity style={styles.button} onPress={adicionarOuEditarProduto}>
+
+              
               <Text style={styles.buttonText}>{editando ? 'Salvar' : 'Cadastrar'}</Text>
             </TouchableOpacity>
           </>

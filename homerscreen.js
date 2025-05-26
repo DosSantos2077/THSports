@@ -16,7 +16,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native'; 
-
+import { doc, setDoc } from "firebase/firestore";
+import {db} from './dbConfig';
 
 const produtos = [
   {
@@ -309,7 +310,7 @@ const filtered = produtos.filter((p) => {
         {isAdmin && (
           
           <TouchableOpacity
-            onPress={() => navigation.navigate('Admin')}>
+            onPress={() => navigation.navigate("Admin")}>
             <View style={styles.cartContainer}>
               <Ionicons name="book" size={28} color="#000" />
               
