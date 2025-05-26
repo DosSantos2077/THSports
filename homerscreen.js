@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { doc, setDoc } from "firebase/firestore";
 import {db} from './dbConfig';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const produtos = [
   {
@@ -274,7 +275,7 @@ const filtered = produtos.filter((p) => {
           <TouchableOpacity
             style={styles.botaoCarrinho}
             onPress={() => handleAddToCart(item)}>
-            <Ionicons name="close" size={24} color="black" />
+            <AntDesign name="minuscircle" size={24} color="black" />
           </TouchableOpacity>
           
         )}
@@ -312,7 +313,7 @@ const filtered = produtos.filter((p) => {
           <TouchableOpacity
             onPress={() => navigation.navigate("Admin")}>
             <View style={styles.cartContainer}>
-              <Ionicons name="book" size={28} color="#000" />
+              <AntDesign name="pluscircle" size={24} color="black" />
               
             </View>
           </TouchableOpacity>

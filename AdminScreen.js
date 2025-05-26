@@ -28,9 +28,14 @@ export default function AdminScreen({ navigation }) {
   const [editando, setEditando] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  function criar (produto){
+  function criar (nome1, marca1, preço1, imagem1){
   
-      setDoc(doc(db, "Produtos"),produto);
+      setDoc(doc(db, "Produtos",nome1),{
+
+        marca: marca1,
+        preço:preço1,
+        imagem:imagem1
+      });
     }
 
   useFocusEffect(
@@ -96,15 +101,8 @@ export default function AdminScreen({ navigation }) {
         )
       );
     } else {
-      const novoProduto = {
-        
-        nome,
-        marca,
-        preco,
-        imagens,
-      };
-      setProdutos([...produtos, novoProduto]);
-      criar(novoProduto);
+      
+      criar(nome,marca,preco,imagens);
     }
 
     limparCampos();
