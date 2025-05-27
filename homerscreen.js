@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native'; 
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc,collection,deleteDoc,getDoc,getDocs } from "firebase/firestore";
 import {db} from './dbConfig';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
@@ -157,6 +157,23 @@ export default function HomeScreen({ navigation }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [marcaSelecionada, setMarcaSelecionada] = useState(null);
+
+  function ler(){
+
+    getDocs(collection(db,"Produtos")).then(docSnap =>{
+
+      let produtos = [];
+
+      docSnap.forEach((doc)=>{
+
+        produtos.push({...doc.data(),id:doc.id})
+
+      })
+      console.log(produtos);
+      
+    })
+    
+  }
 
   useEffect(
     React.useCallback(() => {
@@ -311,7 +328,7 @@ const filtered = produtos.filter((p) => {
         {isAdmin && (
           
           <TouchableOpacity
-            onPress={() => navigation.navigate("Admin")}>
+            onPress={() => ler()}>
             <View style={styles.cartContainer}>
               <AntDesign name="pluscircle" size={24} color="black" />
               
