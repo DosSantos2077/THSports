@@ -28,15 +28,56 @@ export default function AdminScreen({ navigation }) {
   const [editando, setEditando] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  function criar (nome1, marca1, preço1, imagem1){
-  
-      setDoc(doc(db, "Produtos",nome1),{
+  const uploadParaCloudinary = async (imagemUri) => {
+    const data = new FormData();
+    data.append('file', {
+      uri: imagemUri,
+      type: 'image/jpeg',
+      name: 'upload.jpg',
+    });
+    data.append('upload_preset', 'default'); // crie isso no Cloudinary
+    data.append('cloud_name', 'dkrjnyyqi');
 
-        marca: marca1,
-        preço:preço1,
-        imagem:imagem1
+    try {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/dkrjnyyqi/image/upload`, {
+        method: 'POST',
+        body: data,
       });
+
+      const result = await response.json();
+      return result.secure_url; // URL da imagem hospedada
+    } catch (error) {
+      console.error('Erro ao enviar para Cloudinary:', error);
+      return null;
     }
+  };  
+
+
+  async function criar(nome1, marca1, preco1, imagensSelecionadas) {
+    try {
+      const urlsImagens = [];
+
+      for (const uri of imagensSelecionadas) {
+        const url = await uploadParaCloudinary(uri);
+        if (url) {
+          urlsImagens.push(url);
+        }
+      }
+
+      await setDoc(doc(db, "Produtos", nome1), {
+        nome: nome1,
+        marca: marca1,
+        preco: preco1,
+        imagens: urlsImagens,
+      });
+
+      Alert.alert('Sucesso', 'Produto criado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao criar produto:', error);
+      Alert.alert('Erro', 'Não foi possível salvar o produto.');
+    }
+  }
+
 
   useFocusEffect(
     React.useCallback(() => {

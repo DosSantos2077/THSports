@@ -20,129 +20,6 @@ import { doc, setDoc,collection,deleteDoc,getDoc,getDocs } from "firebase/firest
 import {db} from './dbConfig';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-const produtos = [
-  {
-    id: '1',
-    nome: 'Camisa Celtic Football Club',
-    marca: 'ADIDAS',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/image1.png'),
-      require('./assets/image2.png'),
-      require('./assets/image3.png'),
-      require('./assets/image4.png'),
-      require('./assets/image5.png'),
-    ],
-  },
-  {
-    id: '9',
-    nome: 'Camisa Retrô PSG 18/19 Away Jordan ',
-    marca: 'JORDAN',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/psg1.png'),
-      require('./assets/psg.png'),
-      require('./assets/psg2.png'),
-      require('./assets/psg3.png'),
-    ],
-  },
-  {
-    id: '2',
-    nome: 'Camisa Olympiacos 100 anos',
-    marca: 'ADIDAS',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/image8.png'),
-      require('./assets/image9.png'),
-      require('./assets/image10.png'),
-      require('./assets/image6.png'),
-      require('./assets/image7.png'),
-      require('./assets/image11.png'),
-      require('./assets/image12.png'),
-      require('./assets/image13.png'),
-    ],
-  },
-  {
-    id: '3',
-    nome: 'Camisa Santos I 25/26 s/n Torcedor',
-    marca: 'UMBRO',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/santos.png'),
-      require('./assets/santos2.png'),
-      require('./assets/santos3.png'),
-      require('./assets/santos4.png'),
-      require('./assets/santos5.png'),
-    ],
-  },
-  {
-    id: '4',
-    nome: 'Camisa São Paulo Home 25/26 ',
-    marca: 'NEW BALANCE',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/saopaulo1.png'),
-      require('./assets/saopaulo2.png'),
-      require('./assets/saopaulo3.png'),
-      require('./assets/saopaulo4.png'),
-      require('./assets/saopaulo5.png'),
-      require('./assets/saopaulo4.png'),
-    ],
-  },
-  {
-    id: '5',
-    nome: 'Camisa Retrô Arsenal Away 05/06 Torcedor',
-    marca: 'NIKE',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/arsenal.png'),
-      require('./assets/arsenal0.png'),
-      require('./assets/arsenal1.png'),
-      require('./assets/arsenal2.png'),
-      require('./assets/arsenal3.png'),
-      require('./assets/arsenal4.png'),
-    ],
-  },
-  {
-    id: '6',
-    nome: 'Camisa Titular AC Milan 25/26 ',
-    marca: 'PUMA',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/milan.png'),
-      require('./assets/milan2.png'),
-      require('./assets/milan3.png'),
-      require('./assets/milan4.png'),
-    ],
-  },
-  {
-    id: '7',
-    nome: 'Camisa Vasco Home 23/24 - Kappa Torcedor ',
-    marca: 'KAPPA',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/vasco1.png'),
-      require('./assets/vasco2.png'),
-      require('./assets/vasco3.png'),
-      require('./assets/vasco4.png'),
-      require('./assets/vasco5.png'),
-      require('./assets/vasco6.png'),
-    ],
-  },
-  {
-    id: '8',
-    nome: 'Camisa Botafogo Home 23/24 Torcedor',
-    marca: 'REEBOK',
-    preco: 'R$ 80,00',
-    imagens: [
-      require('./assets/reebok1.png'),
-      require('./assets/reebok2.png'),
-      require('./assets/reebok3.png'),
-      require('./assets/reebok4.png'),
-      require('./assets/reebok5.png'),
-    ],
-  },
-];
 
 export default function HomeScreen({ navigation }) {
 
@@ -157,23 +34,33 @@ export default function HomeScreen({ navigation }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [marcaSelecionada, setMarcaSelecionada] = useState(null);
+  const [produtos, setProdutos] = useState([]);
+  
 
   function ler(){
 
     getDocs(collection(db,"Produtos")).then(docSnap =>{
-
-      let produtos = [];
-
+      const lista = [];
       docSnap.forEach((doc)=>{
 
-        produtos.push({...doc.data(),id:doc.id})
+        lista.push({...doc.data(),id:doc.id})
 
       })
-      console.log(produtos);
+      setProdutos(lista);
+      console.log(lista);
       
     })
     
   }
+  useEffect(() => {
+    ler();
+  }, []);
+
+  async function deletar(nome){
+    await deleteDoc(doc(db, "Produtos", nome));
+
+  }
+
 
   useEffect(
     React.useCallback(() => {
@@ -269,11 +156,11 @@ const filtered = produtos.filter((p) => {
   const renderItem = ({ item }) => (
     <View style={styles.produtoContainer}>
       <TouchableOpacity onPress={() => handleOpenModal(item)}>
-        <Image source={item.imagens[0]} style={styles.imagemProduto} />
+        <Image source={{ uri: item.imagens[0] }} style={styles.imagemProduto} />
       </TouchableOpacity>
       <View style={styles.infoProduto}>
+        <Text style={styles.nome}>{item.id}</Text>
         <Text style={styles.marca}>{item.marca}</Text>
-        <Text style={styles.nome}>{item.nome}</Text>
         <Text style={styles.preco}>{item.preco}</Text>
 
         {renderSizes(item.id)}
@@ -291,7 +178,7 @@ const filtered = produtos.filter((p) => {
           
           <TouchableOpacity
             style={styles.botaoCarrinho}
-            onPress={() => handleAddToCart(item)}>
+            onPress={() => deletar(item.id)}>
             <AntDesign name="minuscircle" size={24} color="black" />
           </TouchableOpacity>
           
@@ -328,7 +215,7 @@ const filtered = produtos.filter((p) => {
         {isAdmin && (
           
           <TouchableOpacity
-            onPress={() => ler()}>
+            onPress={() => navigation.navigate("Admin")}>
             <View style={styles.cartContainer}>
               <AntDesign name="pluscircle" size={24} color="black" />
               
@@ -499,7 +386,7 @@ const filtered = produtos.filter((p) => {
                     </TouchableOpacity>
 
                     <Image
-                      source={currentProduct.imagens[currentImageIndex]}
+                      source={{ uri: currentProduct.imagens[currentImageIndex] }}
                       style={styles.modalImage}
                     />
 
@@ -568,7 +455,7 @@ const styles = StyleSheet.create({
   },
   infoProduto: { flex: 1, marginLeft: 15 },
   marca: { fontWeight: 'bold', fontSize: 14 },
-  nome: { fontSize: 13, color: '#444' },
+  nome: { fontWeight: 'bold',fontSize: 13, color: '#444' },
   preco: { fontWeight: 'bold', fontSize: 16, marginTop: 4 },
   tamanhosContainer: {
     flexDirection: 'row',

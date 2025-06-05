@@ -131,9 +131,9 @@ export default function CartScreen({ route, navigation }) {
         data={cartItems}
         renderItem={({ item, index }) => (
           <View style={styles.itemContainer}>
-            <Image source={item.imagem} style={styles.image} />
+            <Image source={{ uri: item.imagens[0] }} style={styles.image} />
             <View style={styles.details}>
-              <Text style={styles.name}>{item.nome}</Text>
+              <Text style={styles.name}>{item.id}</Text>
               <Text style={styles.price}>{item.preco}</Text>
               {item.tamanho && (
                 <Text style={styles.tamanho}>Tamanho: {item.tamanho}</Text>
