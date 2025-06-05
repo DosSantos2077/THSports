@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
-import * as Clipboard from 'react-native'; // Para copiar chave Pix
+import * as Clipboard from 'expo-clipboard';
 import { Linking } from 'react-native';
 
 export default function CartScreen({ route, navigation }) {
@@ -80,32 +80,46 @@ export default function CartScreen({ route, navigation }) {
   };
 
   const handleFinalizePurchase = async () => {
-    try {
-      setIsSending(true);
+  try {
+    setIsSending(true);
 
-      let message = `*Novo Pedido!*\n\n`;
+    let message = `*Novo Pedido!*\n\n`;
 
-      cartItems.forEach(item => {
-        message += `• *${item.nome}* (Tamanho: ${item.tamanho})\nQuantidade: ${item.quantidade}\n\n`;
-      });
+    cartItems.forEach(item => {
+      message += `• *${item.nome}* (Tamanho: ${item.tamanho})\nQuantidade: ${item.quantidade}\n\n`;
+    });
 
-      message += `*Total:* R$ ${totalPrice.toFixed(2)}\n\nObrigado!`;
+    message += `*Total:* R$ ${totalPrice.toFixed(2)}\n\n`;
 
-      const phoneNumber = '5521991588137'; 
-      const url = `https://wa.me/${5521991588137}?text=${encodeURIComponent(message)}`;
+    // Adiciona formas de pagamento selecionadas
+    const formasSelecionadas = [];
+    if (selectedPayments.cartao) formasSelecionadas.push("Cartão");
+    if (selectedPayments.pix) formasSelecionadas.push("Pix");
+    if (selectedPayments.dinheiro) formasSelecionadas.push("Dinheiro");
 
-      await Linking.openURL(url);
-
-      setTimeout(() => {
-        setIsSending(false);
-        navigation.navigate('Home');
-      }, 3000);
-
-    } catch (error) {
-      console.error('Erro ao abrir WhatsApp:', error);
-      setIsSending(false);
+    if (formasSelecionadas.length > 0) {
+      message += `*Pagamento:* ${formasSelecionadas.join(', ')}\n\n`;
+    } else {
+      message += `*Pagamento:* Não selecionado\n\n`;
     }
-  };
+
+    message += `Obrigado!`;
+
+    const phoneNumber = '5521991588137';
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    await Linking.openURL(url);
+
+    setTimeout(() => {
+      setIsSending(false);
+      navigation.navigate('Home');
+    }, 3000);
+  } catch (error) {
+    console.error('Erro ao abrir WhatsApp:', error);
+    setIsSending(false);
+  }
+};
+
 
   const copyPixKey = async () => {
     const pixKey = '21991588137'; 
