@@ -336,10 +336,11 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#001400',
-    padding: 15,
+    padding: 50,
     borderRadius: 16,
     marginTop: 20,
     alignItems: 'center',
+    marginBottom: 20,
   },
   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
   produtoItem: {
